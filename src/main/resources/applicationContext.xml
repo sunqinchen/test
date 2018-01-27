@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
+      http://www.springframework.org/schema/beans/spring-beans-4.0.xsd  
+      http://www.springframework.org/schema/context  
+      http://www.springframework.org/schema/context/spring-context.xsd  
+      http://www.springframework.org/schema/mvc  
+      http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+
+	<!-- 0.配置自动扫名路径，创建bean和注解驱动 -->
+	<context:component-scan base-package="com.ssm"/>
+	<mvc:annotation-driven/>
+	
+	<!-- 1.视图处理器 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/view/"/>
+		<property name="suffix" value=".jsp"/>
+	</bean>
+	
+	<!-- 2.配置数据库源,配置找db.properties文件-->
+	<context:property-placeholder location="classpath:db.properties"/>
+	<bean name="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="${jdbc.driverClassName}"/>
+		<property name="url" value="${jdbc.url}"/>
+		<property name="username" value="${jdbc.username}"/>
+		<property name="password" value="${jdbc.password}"/>
+	</bean>
+	
+	<!-- 3.配置SqlSessionFactory -->
+	<bean name="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="configLocation" value="classpath:mybatis-config.xml"/>
+	</bean>
+	
+	<!-- 4.配置扫描路径 -->
+	<bean class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="com.ssm.dao.GoodsDao"/>
+		<property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+	</bean>
+</beans>
